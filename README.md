@@ -24,4 +24,22 @@ Same above URL's we can access through gateway application using below URL's
 * http://localhost:8081/bookstore/addbooks
 
 
+**Hystrix circuit breaker**
+
+Here I user Hystrix circuit breaker. Fallback method will call to show some information to user when rest service is down.
+
+when we try to access http://localhost:8082/getbooks **or** http://localhost:8081/bookstore/getbooks
+internally http://localhost:8083/getbookdetails rest service will call, if the service is down then fallback method will call.
+
+**Payload Request** for http://localhost:8082/addbooks
+
+{
+    "bookId": 101,
+    "bookName": "Head First Java",
+    "bookPrice": 500.0,
+    "active": true,
+    "authorId": 1011,
+    "authorName": "Herbert Schildt",
+    "address": "USA"
+}
 
