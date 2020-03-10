@@ -2,6 +2,8 @@ package com.bookstore.controller;
 
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,17 +19,29 @@ import com.bookstore.bean.BookDetails;
 import com.google.gson.Gson;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
+/**
+ * This class for add book details, get the book information and author details
+ * @author nvakiti
+ *
+ */
 @RestController
 public class BookStoreController {
 	
+	private static final Logger logger = LoggerFactory.getLogger(BookStoreController.class);
+	
 	/**
 	 * Calling Books Rest API to fetch books details
+	 * @author nvakiti
 	 * @return json
 	 */
 	@GetMapping("/getbooks")
 	@HystrixCommand(fallbackMethod = "getBooksFallback")
 	public String getBooks() {
+		
+		logger.info("Started getBooks()");
+		
 		String uri = "http://localhost:8083/getbookdetails";
+		logger.info("API URI "+uri);
 		String response = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
@@ -36,31 +50,37 @@ public class BookStoreController {
 			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 			ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
 			response = result.getBody();
+			logger.info("Book Details Respose "+response);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
-	     
+		logger.info("End getBooks()");
 		return response;
 	}
 	
 	
 	/**
 	 * Fall back method, when /getbooks service is down then fall back method will call to show info
+	 * @author nvakiti
 	 * @return
 	 */
 	@SuppressWarnings("unused")
 	private String getBooksFallback() {
-	      return "Service is not available, please try again later";
+		logger.info("Started fallback getBooksFallback() for /getbooks");
+	    return "Service is not available, please try again later";
 	}
 	
 	
 	/**
 	 * Calling Author Rest API to fetch author details
+	 * @author nvakiti
 	 * @return
 	 */
 	@GetMapping("/getauthor")
 	public String getAuthor() {
+		logger.info("Started getAuthor()");
 		String uri = "http://localhost:8083/getauthordetails";
+		logger.info("API URI "+uri);
 		String response = null;
 		try {
 			RestTemplate restTemplate = new RestTemplate();
@@ -69,19 +89,23 @@ public class BookStoreController {
 			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 			ResponseEntity<String> result  = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
 			response = result.getBody();
+			logger.info("Author Details Respose "+response);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
-	     
+		logger.info("End getAuthor()");
 		return response;
 	}
 	
 	@PostMapping("/addbooks")
 	public String addBooks(@RequestBody BookDetails bookDetails) {
+		logger.info("Started addBooks()");
 		String uri = "http://localhost:8083/addbookdetails";
+		logger.info("API URI "+uri);
 		String response = null;
 		try {
 			String request = new Gson().toJson(bookDetails);
+			logger.info("Book Details Payload "+request);
 			RestTemplate restTemplate = new RestTemplate();
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -89,9 +113,11 @@ public class BookStoreController {
 			HttpEntity<String> entity = new HttpEntity<String>(request, headers);
 			ResponseEntity<String> result  = restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
 			response = result.getBody();
+			logger.info("Add Books Respose "+response);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
+		logger.info("End addBooks()");
 		return response;
 	}
 	
