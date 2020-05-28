@@ -38,8 +38,6 @@ public class BookStoreController {
 	@HystrixCommand(fallbackMethod = "getBooksFallback")
 	public String getBooks() {
 		
-		logger.info("Started getBooks()");
-		
 		String uri = "http://localhost:8083/getbookdetails";
 		logger.info("API URI "+uri);
 		String response = null;
@@ -54,7 +52,6 @@ public class BookStoreController {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-		logger.info("End getBooks()");
 		return response;
 	}
 	
@@ -78,7 +75,6 @@ public class BookStoreController {
 	 */
 	@GetMapping("/getauthor")
 	public String getAuthor() {
-		logger.info("Started getAuthor()");
 		String uri = "http://localhost:8083/getauthordetails";
 		logger.info("API URI "+uri);
 		String response = null;
@@ -93,13 +89,11 @@ public class BookStoreController {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-		logger.info("End getAuthor()");
 		return response;
 	}
 	
 	@PostMapping("/addbooks")
 	public String addBooks(@RequestBody BookDetails bookDetails) {
-		logger.info("Started addBooks()");
 		String uri = "http://localhost:8083/addbookdetails";
 		logger.info("API URI "+uri);
 		String response = null;
@@ -117,7 +111,6 @@ public class BookStoreController {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-		logger.info("End addBooks()");
 		return response;
 	}
 	
