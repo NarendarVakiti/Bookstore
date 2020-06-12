@@ -2,8 +2,11 @@ package com.bookstore.controller;
 
 import java.util.Arrays;
 
+import com.bookstore.bean.ExceptionStatus;
+import com.bookstore.service.BookFeignService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -28,6 +31,9 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 public class BookStoreController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BookStoreController.class);
+
+	@Autowired
+	private BookFeignService bookFeignService;
 	
 	/**
 	 * Calling Books Rest API to fetch books details
@@ -66,32 +72,7 @@ public class BookStoreController {
 		logger.info("Started fallback getBooksFallback() for /getbooks");
 	    return "Service is not available, please try again later";
 	}
-	
-	
-	/**
-	 * Calling Author Rest API to fetch author details
-	 * @author nvakiti
-	 * @return
-	 */
-	@GetMapping("/getauthor")
-	public String getAuthor() {
-		String uri = "http://localhost:8083/getauthordetails";
-		logger.info("API URI "+uri);
-		String response = null;
-		try {
-			RestTemplate restTemplate = new RestTemplate();
-			HttpHeaders headers = new HttpHeaders();
-			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-			ResponseEntity<String> result  = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
-			response = result.getBody();
-			logger.info("Author Details Respose "+response);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-		return response;
-	}
-	
+
 	@PostMapping("/addbooks")
 	public String addBooks(@RequestBody BookDetails bookDetails) {
 		String uri = "http://localhost:8083/addbookdetails";
@@ -113,6 +94,23 @@ public class BookStoreController {
 		}
 		return response;
 	}
-	
+
+
+	@GetMapping("/getbookdetails")
+	public String getBookDetails(){
+		ResponseEntity<String> responseEntity = null;
+		String response = null;
+		try{
+			responseEntity  = bookFeignService.getBookDetails();
+			response = responseEntity.getBody();
+
+		}catch(Exception e){
+			logger.error("Exception while fetching book details :: "+e.getMessage());
+			ExceptionStatus status = new ExceptionStatus("Unable to fetch book details",
+					"Exception while fetching book details for your request",400,"/getbookdetails");
+			response = new Gson().toJson(status);
+		}
+		return response;
+	}
 
 }
