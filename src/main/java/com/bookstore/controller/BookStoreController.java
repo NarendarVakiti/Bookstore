@@ -103,6 +103,7 @@ public class BookStoreController {
 		try{
 			responseEntity  = bookFeignService.getBookDetails();
 			response = responseEntity.getBody();
+			logger.info("Book details response :: "+response);
 
 		}catch(Exception e){
 			logger.error("Exception while fetching book details :: "+e.getMessage());

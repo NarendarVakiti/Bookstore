@@ -9,5 +9,6 @@ This springboot application is for call rest services from BookStore API (https:
 3. Used Feign Client
 4. Added Eureka Client
 5. Added to Zuul Proxy Server
+6. Added Zipkin and sleuth
 
 
