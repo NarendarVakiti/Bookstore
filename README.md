@@ -1,4 +1,4 @@
-This springboot application is for call rest services from BookStore API (https://gitlab.mynisum.com/nvakiti/bookstore-api.git)
+This springboot application is for call rest services from BookStore API
 
 
 1. Hystrix circuit breaker
